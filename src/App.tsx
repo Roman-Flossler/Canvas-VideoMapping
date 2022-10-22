@@ -1,24 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import Canvas from "./Canvas";
+import "./App.css";
 
 function App() {
+  const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+  const getCtx = (ctx: CanvasRenderingContext2D) => {
+    setCtx(ctx);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Canvas
+        imgUrl="https://www.flor.cz/blog/wp-content/uploads/industrialni-portret.jpg"
+        sizeX={1200}
+        sizeY={800}
+        roundness={3}
+        getCtx={getCtx}
+      ></Canvas>
     </div>
   );
 }
