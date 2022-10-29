@@ -40,15 +40,15 @@ const Canvas = React.memo(({ loadedImg, imgUrl, sizeX, sizeY, roundness, getCtx 
     if (canvasrRef.current) {
       ctx = canvasrRef.current.getContext("2d");
 
-      if (loadedImg) {
-        setCanvas(loadedImg);
-      } else {
-        const initialImg = new Image();
-        initialImg.onload = () => {
-          setCanvas(initialImg);
-        };
-        initialImg.src = imgUrl;
-      }
+      // if (loadedImg) {
+      //   setCanvas(loadedImg);
+      // } else {
+      //   const initialImg = new Image();
+      //   initialImg.onload = () => {
+      //     setCanvas(initialImg);
+      //   };
+      //   initialImg.src = imgUrl;
+      // }
       getCtx(ctx);
     }
   }, [loadedImg, imgUrl, getCtx, sizeY, sizeX]);
