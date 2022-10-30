@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Canvas from "./Canvas";
 import "./App.css";
-import uluwatu from "./imgs/baseImg.jpg";
+import base from "./imgs/baseImg.jpg";
 import mask from "./imgs/mask2.png";
 
 const baseImg = new Image();
@@ -27,11 +27,13 @@ function App() {
 
   useEffect(() => {
     baseImg.onload = () => {
+      console.log("img1");
       setLoads(loads + 1);
     };
-    baseImg.src = uluwatu;
+    baseImg.src = base;
 
     maskImg.onload = () => {
+      console.log("img2");
       setLoads(loads + 1);
     };
     maskImg.src = mask;
@@ -39,7 +41,10 @@ function App() {
 
   function video_load_callback() {
     setLoads(loads + 1);
+    console.log("vid");
   }
+
+  console.log(loads);
 
   function play(video: HTMLVideoElement) {
     if (playing.current) {
@@ -51,7 +56,6 @@ function App() {
     video.cancelVideoFrameCallback(videoHandle.current);
     video.play();
     playing.current = true;
-    console.log(video);
     renderStep(video);
   }
 
@@ -113,32 +117,37 @@ function App() {
 
   return (
     <div className="App">
-      <div id="root">
+      <div id="frame">
+        <div id="controls">
+          <div>Click on the thumbnail to play / pause video: </div>
+          <video
+            onLoadedData={video_load_callback}
+            ref={video1}
+            width="80"
+            height="50"
+            onClick={() => video1.current && play(video1.current)}
+          >
+            <source src="./assets/clip.mp4" type="video/mp4" />
+          </video>
+          <video
+            onLoadedData={video_load_callback}
+            ref={video2}
+            width="120"
+            height="50"
+            onClick={() => video2.current && play(video2.current)}
+          >
+            <source src="./assets/illusion.mp4" type="video/mp4" />
+          </video>
+          <div>Then you can drag & move video within a tower.</div>
+        </div>
         <div id="mouseCatcher" onMouseMove={mouseMove} onMouseDown={mouseDown} onMouseUp={mouseUp}></div>
-        <img src={uluwatu} alt="" />
+        <img src={base} alt="" />
         <Canvas loadedImg={baseImg} sizeX={screenWidth} sizeY={screenHeight} roundness={6} getCtx={getCtx}></Canvas>
       </div>
       <br />
-      <video
-        onLoadedData={video_load_callback}
-        ref={video1}
-        width="60"
-        height="40"
-        onClick={() => video1.current && play(video1.current)}
-      >
-        <source src="./assets/clip.mp4" type="video/mp4" />
-      </video>
-      <video
-        onLoadedData={video_load_callback}
-        ref={video2}
-        width="60"
-        height="40"
-        onClick={() => video2.current && play(video2.current)}
-      >
-        <source src="./assets/illusion.mp4" type="video/mp4" />
-      </video>
+
       {error && <p>{error}</p>}
-      {loads < 2 && <p>loading..</p>}
+      {loads < 4 && <p>loading..</p>}
     </div>
   );
 }
