@@ -13,14 +13,13 @@ function App() {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [error, setError] = useState("");
   const [loads, setLoads] = useState(0);
-  //const [isMouseDown, setIsMouseDown] = useState(false);
   const isMouseDown = useRef(false);
-  const video = useRef<HTMLVideoElement>(null);
+  const video1 = useRef<HTMLVideoElement>(null);
+  const video2 = useRef<HTMLVideoElement>(null);
   const videoHandle = useRef(0);
+  const playing = useRef(false);
   const currentPos = useRef([0, 0]);
   const dragPos = useRef([0, 0]);
-
-  const someImg = "https://www.flor.cz/blog/wp-content/uploads/industrialni-portret.jpg";
 
   const getCtx = (ctx: CanvasRenderingContext2D) => {
     setCtx(ctx);
@@ -42,21 +41,21 @@ function App() {
     setLoads(loads + 1);
   }
 
-  function play() {
-    if (video.current === null) {
+  function play(video: HTMLVideoElement) {
+    if (playing.current) {
+      video1.current && video1.current.pause();
+      video2.current && video2.current.pause();
+      playing.current = false;
       return;
     }
-    video.current.cancelVideoFrameCallback(videoHandle.current);
-    video.current.play();
-    renderStep();
+    video.cancelVideoFrameCallback(videoHandle.current);
+    video.play();
+    playing.current = true;
+    console.log(video);
+    renderStep(video);
   }
 
-  function renderStep() {
-    if (video.current === null) {
-      return;
-    }
-    const width = ctx?.canvas.offsetWidth;
-    const height = ctx?.canvas.offsetWidth;
+  function renderStep(video: HTMLVideoElement) {
     ctx?.save();
     ctx?.drawImage(baseImg, 0, 0, ctx.canvas.offsetWidth, ctx.canvas.offsetHeight);
 
@@ -64,7 +63,7 @@ function App() {
       ctx.globalCompositeOperation = "hard-light";
     }
     ctx?.drawImage(
-      video.current,
+      video,
       currentPos.current[0] - dragPos.current[0] + 300,
       currentPos.current[1] - dragPos.current[1] + 160,
       ctx.canvas.offsetWidth * 0.6,
@@ -75,7 +74,7 @@ function App() {
       ctx.globalAlpha = 0.9;
     }
     ctx?.drawImage(
-      video.current,
+      video,
       currentPos.current[0] - dragPos.current[0] + 300,
       currentPos.current[1] - dragPos.current[1] + 160,
       ctx.canvas.offsetWidth * 0.6,
@@ -86,7 +85,9 @@ function App() {
     }
     ctx?.drawImage(maskImg, 0, 0, ctx.canvas.offsetWidth, ctx.canvas.offsetHeight);
     try {
-      videoHandle.current = video.current.requestVideoFrameCallback(renderStep);
+      videoHandle.current = video.requestVideoFrameCallback(() => {
+        renderStep(video);
+      });
     } catch {
       setError("Error: your browser doesn't support requestVideoFrameCallback");
       return;
@@ -118,8 +119,23 @@ function App() {
         <Canvas loadedImg={baseImg} sizeX={screenWidth} sizeY={screenHeight} roundness={6} getCtx={getCtx}></Canvas>
       </div>
       <br />
-      <video onLoadedData={video_load_callback} ref={video} width="60" height="40" onClick={play}>
+      <video
+        onLoadedData={video_load_callback}
+        ref={video1}
+        width="60"
+        height="40"
+        onClick={() => video1.current && play(video1.current)}
+      >
         <source src="./assets/clip.mp4" type="video/mp4" />
+      </video>
+      <video
+        onLoadedData={video_load_callback}
+        ref={video2}
+        width="60"
+        height="40"
+        onClick={() => video2.current && play(video2.current)}
+      >
+        <source src="./assets/illusion.mp4" type="video/mp4" />
       </video>
       {error && <p>{error}</p>}
       {loads < 2 && <p>loading..</p>}
