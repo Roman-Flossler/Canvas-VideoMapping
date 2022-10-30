@@ -1,20 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import Canvas from "./Canvas";
 import "./App.css";
+import uluwatu from "./imgs/uluwatu.jpg";
+import mask from "./imgs/mask.png";
 
-const initialImg = new Image();
-const mask = new Image();
-const light = new Image();
+const uluwatuImg = new Image();
+const maskImg = new Image();
+const screenWidth = window.screen.width;
+const screenHeight = window.screen.height - 300;
 
 function App() {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
-  const [pos, setPos] = useState<[number, number]>([500, 400]);
-  const [dragPos, setDragPos] = useState<[number, number]>([500, 400]);
+  const [error, setError] = useState("");
   const [loads, setLoads] = useState(0);
-  const [isMouseDown, setIsMouseDown] = useState(false);
+  //const [isMouseDown, setIsMouseDown] = useState(false);
+  const isMouseDown = useRef(false);
   const video = useRef<HTMLVideoElement>(null);
   const videoHandle = useRef(0);
-  const posi = useRef([500, 400]);
+  const currentPos = useRef([0, 0]);
+  const dragPos = useRef([0, 0]);
 
   const someImg = "https://www.flor.cz/blog/wp-content/uploads/industrialni-portret.jpg";
 
@@ -23,27 +27,25 @@ function App() {
   };
 
   useEffect(() => {
-    initialImg.onload = () => {
+    uluwatuImg.onload = () => {
       setLoads(loads + 1);
     };
-    initialImg.src = someImg;
+    uluwatuImg.src = uluwatu;
 
-    mask.onload = () => {
+    maskImg.onload = () => {
       setLoads(loads + 1);
     };
-    mask.src = "https://i.imgur.com/yOc0YHC.png";
-
-    light.onload = () => {
-      setLoads(loads + 1);
-    };
-    light.src = "https://thumbs.gfycat.com/AchingGargantuanBass.webp";
+    maskImg.src = mask;
   }, []);
 
   function video_load_callback() {
+    setLoads(loads + 1);
+  }
+  function play() {
     if (video.current === null) {
       return;
     }
-    //video.current.cancelVideoFrameCallback(videoHandle.current);
+    video.current.cancelVideoFrameCallback(videoHandle.current);
     video.current.play();
     step();
   }
@@ -51,57 +53,45 @@ function App() {
     if (video.current === null) {
       return;
     }
-    console.log(posi);
+    ctx?.drawImage(uluwatuImg, 0, 0, ctx.canvas.offsetWidth, ctx.canvas.offsetHeight);
     ctx?.save();
-    ctx?.drawImage(video.current, posi.current[0] - dragPos[0], posi.current[1] - dragPos[1], 1000, 800);
-    if (ctx) {
-      ctx.globalCompositeOperation = "soft-light";
-    }
-    ctx?.drawImage(light, 0, 0, 1000, 800);
+    ctx?.drawImage(
+      video.current,
+      currentPos.current[0] - dragPos.current[0],
+      currentPos.current[1] - dragPos.current[1],
+      ctx.canvas.offsetWidth,
+      ctx.canvas.offsetHeight
+    );
     if (ctx) {
       ctx.globalCompositeOperation = "destination-atop";
     }
-    ctx?.drawImage(mask, 0, 0, 1000, 800);
-
-    videoHandle.current = video.current.requestVideoFrameCallback(step);
+    ctx?.drawImage(maskImg, 0, 0, ctx.canvas.offsetWidth, ctx.canvas.offsetHeight);
+    try {
+      videoHandle.current = video.current.requestVideoFrameCallback(step);
+    } catch {
+      setError("Error: your browser doesn't support requestVideoFrameCallback");
+      return;
+    }
     ctx?.restore();
   }
 
   useEffect(() => {
-    step();
+    //    step();
   }, [loads]);
 
-  const render = () => {
-    ctx?.save();
-    ctx?.drawImage(initialImg, pos[0] - dragPos[0], pos[1] - dragPos[1], 1000, 800);
-    if (ctx) {
-      ctx.globalCompositeOperation = "soft-light";
-    }
-    ctx?.drawImage(light, 0, 0, 1000, 800);
-    if (ctx) {
-      ctx.globalCompositeOperation = "destination-atop";
-    }
-    ctx?.drawImage(mask, 0, 0, 1000, 800);
-
-    ctx?.restore();
-  };
-
   const mouseDown = (e: React.MouseEvent) => {
-    setIsMouseDown(true);
-    setPos([e.nativeEvent.offsetX, e.nativeEvent.offsetY]);
-    setDragPos([e.nativeEvent.offsetX, e.nativeEvent.offsetY]);
+    isMouseDown.current = true;
+    currentPos.current = [e.nativeEvent.offsetX, e.nativeEvent.offsetY];
+    dragPos.current = [e.nativeEvent.offsetX, e.nativeEvent.offsetY];
   };
 
   const mouseUp = (e: React.MouseEvent) => {
-    setIsMouseDown(false);
+    isMouseDown.current = false;
   };
 
   const mouseMove = (e: React.MouseEvent) => {
-    if (isMouseDown) {
-      setPos([e.nativeEvent.offsetX, e.nativeEvent.offsetY]);
-      posi.current = [e.nativeEvent.offsetX, e.nativeEvent.offsetY];
-
-      //render();
+    if (isMouseDown.current) {
+      currentPos.current = [e.nativeEvent.offsetX, e.nativeEvent.offsetY];
     }
   };
 
@@ -109,22 +99,13 @@ function App() {
     <div className="App">
       <div id="root">
         <div id="mouseCatcher" onMouseMove={mouseMove} onMouseDown={mouseDown} onMouseUp={mouseUp}></div>
-        <Canvas imgUrl={someImg} sizeX={1200} sizeY={800} roundness={3} getCtx={getCtx}></Canvas>
+        <Canvas loadedImg={uluwatuImg} sizeX={screenWidth} sizeY={screenHeight} roundness={6} getCtx={getCtx}></Canvas>
       </div>
-      <button
-        onClick={() => {
-          console.log("tes");
-          ctx?.save();
-          ctx?.rotate((20 * Math.PI) / 180);
-          ctx?.drawImage(initialImg, 554, -446, 400, 300);
-          ctx?.restore();
-        }}
-      >
-        rotate
-      </button>
-      <video onLoadedData={video_load_callback} ref={video} width="320" height="240" controls>
+      <video onLoadedData={video_load_callback} ref={video} width="60" height="40" onClick={play}>
         <source src="./assets/clip.mp4" type="video/mp4" />
       </video>
+      {error && <p>{error}</p>}
+      {loads < 2 && <p>loading..</p>}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import React, { useRef, useLayoutEffect } from "react";
 
 type Props = {
   loadedImg?: HTMLImageElement;
-  imgUrl: string;
+  imgUrl?: string;
   sizeX: number;
   sizeY: number;
   roundness?: number;
@@ -11,6 +11,7 @@ type Props = {
 
 const Canvas = React.memo(({ loadedImg, imgUrl, sizeX, sizeY, roundness, getCtx }: Props) => {
   const canvasrRef = useRef<HTMLCanvasElement>(null);
+  console.log("refresh");
 
   useLayoutEffect(() => {
     const calcImgSize = (x: number, y: number) => {
@@ -40,15 +41,15 @@ const Canvas = React.memo(({ loadedImg, imgUrl, sizeX, sizeY, roundness, getCtx 
     if (canvasrRef.current) {
       ctx = canvasrRef.current.getContext("2d");
 
-      // if (loadedImg) {
-      //   setCanvas(loadedImg);
-      // } else {
-      //   const initialImg = new Image();
-      //   initialImg.onload = () => {
-      //     setCanvas(initialImg);
-      //   };
-      //   initialImg.src = imgUrl;
-      // }
+      if (loadedImg) {
+        setCanvas(loadedImg);
+      } else if (imgUrl) {
+        const initialImg = new Image();
+        initialImg.onload = () => {
+          setCanvas(initialImg);
+        };
+        initialImg.src = imgUrl;
+      }
       getCtx(ctx);
     }
   }, [loadedImg, imgUrl, getCtx, sizeY, sizeX]);

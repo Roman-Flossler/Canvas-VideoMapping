@@ -21,3 +21,10 @@ code {
   height: 100%;
   position: absolute;
 }
+
+p {
+  font-family: monospace;
+  font-size: 1.2rem;
+  color: rgb(255, 238, 0);
+  text-shadow: 0 0 33px red, 0 0 13px red, 0 0 3px red;
+}
