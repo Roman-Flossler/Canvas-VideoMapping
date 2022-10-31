@@ -6,8 +6,6 @@ import mask from "./imgs/mask2.png";
 
 const baseImg = new Image();
 const maskImg = new Image();
-const screenWidth = window.innerWidth;
-const screenHeight = window.innerHeight - 200;
 
 function App() {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
@@ -26,16 +24,7 @@ function App() {
   };
 
   useEffect(() => {
-    baseImg.onload = () => {
-      console.log("img1");
-      setLoads(loads + 1);
-    };
     baseImg.src = base;
-
-    maskImg.onload = () => {
-      console.log("img2");
-      setLoads(loads + 1);
-    };
     maskImg.src = mask;
   }, []);
 
@@ -53,7 +42,7 @@ function App() {
       playing.current = false;
       return;
     }
-    video.cancelVideoFrameCallback(videoHandle.current);
+    //video.cancelVideoFrameCallback(videoHandle.current);
     video.play();
     playing.current = true;
     renderStep(video);
@@ -117,7 +106,7 @@ function App() {
 
   return (
     <div className="App">
-      <div id="frame">
+      <div id="frame" className={loads < 2 ? "loading" : ""}>
         <div id="controls">
           <div>Click on the thumbnail to play / pause video: </div>
           <video
@@ -142,12 +131,17 @@ function App() {
         </div>
         <div id="mouseCatcher" onMouseMove={mouseMove} onMouseDown={mouseDown} onMouseUp={mouseUp}></div>
         <img src={base} alt="" />
-        <Canvas loadedImg={baseImg} sizeX={screenWidth} sizeY={screenHeight} roundness={6} getCtx={getCtx}></Canvas>
+        <Canvas
+          loadedImg={baseImg}
+          sizeX={window.innerWidth}
+          sizeY={window.innerHeight - window.innerHeight / 6}
+          roundness={6}
+          getCtx={getCtx}
+        ></Canvas>
       </div>
-      <br />
 
       {error && <p>{error}</p>}
-      {loads < 4 && <p>loading..</p>}
+      {loads < 2 && <p>loading..</p>}
     </div>
   );
 }

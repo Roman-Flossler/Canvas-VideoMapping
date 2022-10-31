@@ -4,8 +4,20 @@ body {
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding-top: 5rem;
   background-color: rgb(48, 60, 61);
+}
+
+body,
+.App {
+  width: 100vw;
+  height: 99vh;
+}
+
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 code {
@@ -23,6 +35,10 @@ video {
   display: inline-block;
   margin: auto;
   cursor: grab;
+}
+
+#frame.loading {
+  filter: blur(30px);
 }
 
 #mouseCatcher,
@@ -56,4 +72,5 @@ p {
   font-size: 1.2rem;
   color: rgb(255, 238, 0);
   text-shadow: 0 0 33px red, 0 0 13px red, 0 0 3px red;
+  margin-bottom: 3vh;
 }
