@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Canvas from "./Canvas";
 import "./App.css";
-import base from "./imgs/baseImg.jpg";
-import mask from "./imgs/mask2.png";
 
 const baseImg = new Image();
 const maskImg = new Image();
@@ -24,8 +22,8 @@ function App() {
   };
 
   useEffect(() => {
-    baseImg.src = base;
-    maskImg.src = mask;
+    baseImg.src = "./assets/baseImg.jpg";
+    maskImg.src = "./assets/mask2.png";
   }, []);
 
   function video_load_callback() {
@@ -49,6 +47,8 @@ function App() {
   }
 
   function renderStep(video: HTMLVideoElement) {
+    const vRatio = video.videoWidth / video.videoHeight;
+
     ctx?.save();
     ctx?.drawImage(baseImg, 0, 0, ctx.canvas.offsetWidth, ctx.canvas.offsetHeight);
 
@@ -57,10 +57,10 @@ function App() {
     }
     ctx?.drawImage(
       video,
-      currentPos.current[0] - dragPos.current[0] + 300,
-      currentPos.current[1] - dragPos.current[1] + 160,
-      ctx.canvas.offsetWidth * 0.6,
-      ctx.canvas.offsetHeight * 0.8
+      currentPos.current[0] - dragPos.current[0] + ctx.canvas.offsetWidth / 4,
+      currentPos.current[1] - dragPos.current[1] + ctx.canvas.offsetHeight / 3.5,
+      ctx.canvas.offsetHeight * 0.666 * vRatio,
+      ctx.canvas.offsetHeight * 0.666
     );
     if (ctx) {
       ctx.globalCompositeOperation = "overlay";
@@ -68,10 +68,10 @@ function App() {
     }
     ctx?.drawImage(
       video,
-      currentPos.current[0] - dragPos.current[0] + 300,
-      currentPos.current[1] - dragPos.current[1] + 160,
-      ctx.canvas.offsetWidth * 0.6,
-      ctx.canvas.offsetHeight * 0.8
+      currentPos.current[0] - dragPos.current[0] + ctx.canvas.offsetWidth / 4,
+      currentPos.current[1] - dragPos.current[1] + ctx.canvas.offsetHeight / 3.5,
+      ctx.canvas.offsetHeight * 0.666 * vRatio,
+      ctx.canvas.offsetHeight * 0.666
     );
     if (ctx) {
       ctx.globalCompositeOperation = "destination-atop";
@@ -82,7 +82,7 @@ function App() {
         renderStep(video);
       });
     } catch {
-      setError("Error: your browser doesn't support requestVideoFrameCallback");
+      setError("Error: your browser doesn't support requestVideoFrameCallback. No video mapping :(");
       return;
     }
     ctx?.restore();
@@ -112,7 +112,6 @@ function App() {
           <video
             onLoadedData={video_load_callback}
             ref={video1}
-            width="80"
             height="50"
             onClick={() => video1.current && play(video1.current)}
           >
@@ -121,7 +120,6 @@ function App() {
           <video
             onLoadedData={video_load_callback}
             ref={video2}
-            width="120"
             height="50"
             onClick={() => video2.current && play(video2.current)}
           >
@@ -130,11 +128,11 @@ function App() {
           <div>Then you can drag & move video within a tower.</div>
         </div>
         <div id="mouseCatcher" onMouseMove={mouseMove} onMouseDown={mouseDown} onMouseUp={mouseUp}></div>
-        <img src={base} alt="" />
+        <img src={baseImg.src} alt="" />
         <Canvas
           loadedImg={baseImg}
           sizeX={window.innerWidth}
-          sizeY={window.innerHeight - window.innerHeight / 6}
+          sizeY={window.innerHeight - window.innerHeight / 8}
           roundness={6}
           getCtx={getCtx}
         ></Canvas>

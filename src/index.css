@@ -8,6 +8,7 @@ body {
 }
 
 body,
+html,
 .App {
   width: 100vw;
   height: 99vh;
@@ -25,7 +26,7 @@ code {
 }
 
 video {
-  margin: 0.5rem 0;
+  margin: 0.5rem;
   cursor: pointer;
 }
 
@@ -73,4 +74,30 @@ p {
   color: rgb(255, 238, 0);
   text-shadow: 0 0 33px red, 0 0 13px red, 0 0 3px red;
   margin-bottom: 3vh;
+}
+
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  body,
+  html,
+  .App,
+  #root {
+    width: 300vw;
+    height: 99vh;
+  }
+  #frame #controls {
+    left: 50%;
+    transform: translateX(-40%);
+  }
+  #frame #controls div:last-child {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 900px) and (orientation: landscape) {
+  #frame #controls {
+    top: -0.5rem;
+  }
+  #frame #controls div:last-child {
+    display: none;
+  }
 }
