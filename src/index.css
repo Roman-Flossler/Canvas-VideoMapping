@@ -12,6 +12,7 @@ html,
 .App {
   width: 100vw;
   height: 99vh;
+  overflow-x: hidden;
 }
 
 .App {
@@ -28,6 +29,8 @@ code {
 video {
   margin: 0.5rem;
   cursor: pointer;
+  box-shadow: 0 0 8px #3b3b91;
+  border-radius: 30px;
 }
 
 #frame {
@@ -73,30 +76,27 @@ p {
   font-size: 1.2rem;
   color: rgb(255, 238, 0);
   text-shadow: 0 0 33px red, 0 0 13px red, 0 0 3px red;
-  margin-bottom: 3vh;
+  margin-bottom: 1.5vh;
 }
 
-@media only screen and (max-width: 600px) and (orientation: portrait) {
-  body,
-  html,
-  .App,
-  #root {
-    width: 300vw;
-    height: 99vh;
-  }
+@media (orientation: portrait) {
   #frame #controls {
-    left: 50%;
-    transform: translateX(-40%);
+    left: 41%;
+    transform: translateX(-13%);
+    top: -1.5rem;
   }
-  #frame #controls div:last-child {
-    display: none;
+  #frame {
+    transform: translateX(-37%);
   }
 }
 
-@media only screen and (max-width: 900px) and (orientation: landscape) {
+@media (max-width: 900px) and (orientation: landscape) {
   #frame #controls {
     top: -0.5rem;
   }
+}
+
+@media (pointer: coarse) {
   #frame #controls div:last-child {
     display: none;
   }

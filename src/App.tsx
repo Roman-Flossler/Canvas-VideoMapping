@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Canvas from "./Canvas";
 import "./App.css";
 
+const scale = window.innerWidth > window.innerHeight ? 1 : 2.2;
 const baseImg = new Image();
 const maskImg = new Image();
 
@@ -28,10 +29,7 @@ function App() {
 
   function video_load_callback() {
     setLoads(loads + 1);
-    console.log("vid");
   }
-
-  console.log(loads);
 
   function play(video: HTMLVideoElement) {
     if (playing.current) {
@@ -106,7 +104,7 @@ function App() {
 
   return (
     <div className="App">
-      <div id="frame" className={loads < 2 ? "loading" : ""}>
+      <div id="frame">
         <div id="controls">
           <div>Click on the thumbnail to play / pause video: </div>
           <video
@@ -131,7 +129,7 @@ function App() {
         <img src={baseImg.src} alt="" />
         <Canvas
           loadedImg={baseImg}
-          sizeX={window.innerWidth}
+          sizeX={window.innerWidth * scale}
           sizeY={window.innerHeight - window.innerHeight / 8}
           roundness={6}
           getCtx={getCtx}
@@ -139,7 +137,6 @@ function App() {
       </div>
 
       {error && <p>{error}</p>}
-      {loads < 2 && <p>loading..</p>}
     </div>
   );
 }
