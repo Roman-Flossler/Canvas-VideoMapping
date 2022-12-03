@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from "react";
+import React, { useRef, useEffect } from "react";
 
 type Props = {
   loadedImg?: HTMLImageElement;
@@ -6,14 +6,13 @@ type Props = {
   sizeX: number;
   sizeY: number;
   roundness?: number;
-  getCtx: any;
+  getCtx: (ctx: CanvasRenderingContext2D | null) => void;
 };
 
 const Canvas = React.memo(({ loadedImg, imgUrl, sizeX, sizeY, roundness, getCtx }: Props) => {
   const canvasrRef = useRef<HTMLCanvasElement>(null);
-  console.log("refresh");
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const calcImgSize = (x: number, y: number) => {
       let imgRatio = x / y;
       let setRatio = sizeX / sizeY;
